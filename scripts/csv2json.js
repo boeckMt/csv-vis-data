@@ -4,9 +4,9 @@ const fs = require('fs');
 
 
 /** https://ourworldindata.org/coronavirus-source-data */
-// const dataUrl = 'http://cowid.netlify.com/data/full_data.csv';
-const datUrl = 'http://localhost:3500/full_data.csv';
-fetch(datUrl)
+const dataUrl = 'http://cowid.netlify.com/data/full_data.csv';
+// const dataUrl = 'http://localhost:3500/full_data.csv';
+fetch(dataUrl)
   .then(res => res.text())
   .then(csvString => {
     c2j({
@@ -39,7 +39,7 @@ function formatData(csvJson) {
       max: null,
       count: null
     },
-    source: datUrl,
+    source: dataUrl,
     locations: {},
     dates: {}
   };
