@@ -1,0 +1,28 @@
+<clr-main-container [ngClass]="{'floating':ui.floating}">
+  <ukis-global-alert *ngIf="ui.alert" [(alert)]="ui.alert"></ukis-global-alert>
+  <ukis-global-progress *ngIf="ui.progress" [(progress)]="ui.progress"></ukis-global-progress>
+
+  <ukis-header [ukis-title]="title">
+  </ukis-header>
+  <section class="content-container">
+    <main class="content-area map-view">
+      <ukis-map-ol [layersSvc]="layerSvc" [mapState]="mapStateSvc" [controls]="controls"></ukis-map-ol>
+    </main>
+
+
+    <!-- <clr-vertical-nav [clrVerticalNavCollapsible]="true" [clr-nav-level]="2">
+      <clr-vertical-nav-group [clrVerticalNavGroupExpanded]="false" class="layers">
+        <clr-icon shape="layers" clrVerticalNavIcon title="layers"></clr-icon>
+        Layers
+        <clr-vertical-nav-group-children class="padding title-ellipsis">
+          <ukis-layer-control [layersSvc]="layerSvc" [mapStateSvc]="mapStateSvc"></ukis-layer-control>
+        </clr-vertical-nav-group-children>
+      </clr-vertical-nav-group>
+    </clr-vertical-nav> -->
+
+
+     <section class="footer ukis-footer">
+      <p>footer</p>
+    </section>
+  </section>
+</clr-main-container>
