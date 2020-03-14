@@ -14,21 +14,13 @@ import olTopoJSON from 'ol/format/TopoJSON';
 import olVectorSource from 'ol/source/Vector';
 import { Vector as olVectorLayer } from 'ol/layer';
 import { Fill as olFill, Stroke as olStroke, Style as olStyle } from 'ol/style';
-
+import { ICsvData, ICsvItem } from '../../scripts/globals';
 
 interface IUi {
   floating: boolean;
   flipped: boolean;
   alert: null | IAlert;
   progress: null | IProgress;
-}
-
-
-interface ILocation {
-  'new_cases': number;
-  'new_deaths': number;
-  'total_cases': number;
-  'total_deaths': number;
 }
 
 @Component({
@@ -70,61 +62,58 @@ export class AppComponent implements OnInit {
   }
 
   async getData() {
-    const dates = await fetch('assets/data/dates.json').then((response) => {
+    const coronaData: ICsvData = await fetch('assets/data/coronavirus-source-data.json').then((response) => {
       return response.json();
     })
-
-    const coronaData = await fetch('assets/data/coronavirus-source-data.json').then((response) => {
-      return response.json();
-    })
-    return {
-      dates,
-      coronaData
-    }
+    return coronaData;
   }
 
 
   getColor(value: number) {
 
     let color = '#ffffff';
-    if (value > 10) {
+    if (value > 0 && value <= 10) {
+      color = '#fff5f0';
 
-    } else if (value > 20) {
-      color = '#67000d'
     }
-    else if (value > 40) {
-      color = '#a50f15'
+    else if (value > 10 && value <= 50) {
+      color = '#fee0d2';
+
     }
-    else if (value > 80) {
-      color = '#cb181d'
+    else if (value > 50 && value <= 100) {
+      color = '#cb181d';
+
     }
-    else if (value > 160) {
+    else if (value > 100 && value <= 300) {
+      color = '#fcbba1';
+
+    }
+    else if (value > 300 && value <= 600) {
+      color = '#fc9272';
+
+    }
+    else if (value > 600 && value <= 1200) {
+      color = '#ef3b2c';
+    }
+    else if (value > 1200 && value <= 2400) {
       color = '#fb6a4a';
     }
-    else if (value > 300) {
-      color = '#ef3b2c'
+    else if (value > 2400 && value <= 4800) {
+      color = '#a50f15';
     }
-    else if (value > 600) {
-      color = '#fc9272';
-    }
-    else if (value > 900) {
-      color = '#fcbba1';
-    }
-    else if (value > 1200) {
-      color = '#fee0d2';
-    }
-    else if (value > 2000) {
-      color = '#fff5f0';
+    else if (value > 4800) {
+
+      color = '#67000d';
     }
 
     return color;
   }
 
-  addlayers(data: { dates: string[], coronaData: any }) {
+  addlayers(data: ICsvData) {
 
-    console.log(this.getColor(50));
-    const date = data.dates[data.dates.length - 1];
-    const locations = data.coronaData[date];
+    const dates = Object.keys(data.dates);
+    const date = dates[dates.length - 1];
+    const locations = data.locations;
 
     let hasLog = false;
     const olJsonLayer = new olVectorLayer({
@@ -147,7 +136,8 @@ export class AppComponent implements OnInit {
 
         const name = feature.get('name');
         if (locations[name]) {
-          const loc: ILocation = locations[name];
+          const locationIndex = locations[name];
+          const loc = data.dates[date][locationIndex];
           feature.set('total_cases', loc.total_cases || null);
 
           /* if (!hasLog) {

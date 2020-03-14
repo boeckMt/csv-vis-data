@@ -3,23 +3,6 @@ const fetch = require('node-fetch').default;
 const fs = require('fs');
 
 
-/**
- * @typedef {Object} CsvItem
- * @property { number } new_cases
- * @property { number } new_deaths
- * @property { number } total_cases
- * @property { number } total_deaths
- */
-
-
-/**
- * @typedef {Object} CsvData
- * @property {{min: string, max:string, count: number}} daterage
- * @property {string} source
- * @property {{[ci:string]:number}} locations
- * @property {{[di:string]:{[ci:number]: CsvItem} }} dates
- */
-
 /** https://ourworldindata.org/coronavirus-source-data */
 // const dataUrl = 'http://cowid.netlify.com/data/full_data.csv';
 const datUrl = 'http://localhost:3500/full_data.csv';
@@ -44,11 +27,11 @@ fetch(datUrl)
 /**
  * Array<[date, location, new_cases, new_deaths, total_cases, total_deaths]>
  * @param {Array<[string, string, string, string, string, string ]>} csvJson
- * @returns { CsvData }
+ * @returns { import('./globals').ICsvData }
  */
 function formatData(csvJson) {
   /**
-   * @type CsvData
+   * @type import('./globals').ICsvData
    */
   const formatData = {
     daterage: {
@@ -108,7 +91,7 @@ function formatData(csvJson) {
     if (formatData.dates[date]) {
 
       /**
-       * @type CsvItem
+       * @type import('./globals').ICsvItem
        */
       const ciItem = {
         new_cases: parseFloat(new_cases),
