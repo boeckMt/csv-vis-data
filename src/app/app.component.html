@@ -21,8 +21,37 @@
     </clr-vertical-nav> -->
 
 
-     <section class="footer ukis-footer">
-      <p>footer</p>
+    <section class="footer ukis-footer">
+
+      <div class="clr-row">
+        <div class="clr-col-4">
+          <div class="btn-group btn-primary btn-icon">
+            <button class="btn">
+              <clr-icon shape="play" title="play"></clr-icon>
+            </button>
+            <button class="btn">
+              <clr-icon shape="stop" title="stop"></clr-icon>
+            </button>
+            <button class="btn">
+              <clr-icon shape="step-forward down"></clr-icon>
+            </button>
+            <button class="btn">
+              <clr-icon shape="step-forward"></clr-icon>
+            </button>
+          </div>
+
+        </div>
+        <div class="clr-col-8">
+          <form clrForm>
+            <clr-range-container [clrRangeHasProgress]="false">
+              <!-- <label>{{timeValue}}</label> -->
+              <input type="range" clrRange name="three" [value]="range.value" [min]="range.min" [max]="range.max"
+                [step]="range.step" (change)="rangeChange($event)" />
+              <!-- <clr-control-helper>Helper text</clr-control-helper> -->
+            </clr-range-container>
+          </form>
+        </div>
+      </div>
     </section>
   </section>
 </clr-main-container>

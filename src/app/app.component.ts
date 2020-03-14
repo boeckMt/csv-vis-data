@@ -6,15 +6,11 @@ import { AlertService, IAlert } from './components/global-alert/alert.service';
 import { ProgressService, IProgress } from './components/global-progress/progress.service';
 
 
-import { LayersService, CustomLayer } from '@dlr-eoc/services-layers';
+import { LayersService } from '@dlr-eoc/services-layers';
 import { MapStateService } from '@dlr-eoc/services-map-state';
 import { IMapControls } from '@dlr-eoc/map-ol';
 
-import olTopoJSON from 'ol/format/TopoJSON';
-import olVectorSource from 'ol/source/Vector';
-import { Vector as olVectorLayer } from 'ol/layer';
-import { Fill as olFill, Stroke as olStroke, Style as olStyle } from 'ol/style';
-import { ICsvData, ICsvItem } from '../../scripts/globals';
+import { getData, createLayers, styleVector } from './map-utils';
 
 interface IUi {
   floating: boolean;
@@ -41,6 +37,17 @@ export class AppComponent implements OnInit {
 
   controls: IMapControls;
 
+  vectorOlLayer: any;
+  csvData: any;
+  public timeValue: string;
+
+  public range = {
+    min: 0,
+    max: 30,
+    step: 1,
+    value: 10
+  }
+
   constructor(
     private alertService: AlertService,
     private progressService: ProgressService,
@@ -55,134 +62,43 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getData().then(data => {
-      this.addlayers(data)
-    })
-
-  }
-
-  async getData() {
-    const coronaData: ICsvData = await fetch('assets/data/coronavirus-source-data.json').then((response) => {
-      return response.json();
-    })
-    return coronaData;
-  }
-
-
-  getColor(value: number) {
-
-    let color = '#ffffff';
-    if (value > 0 && value <= 10) {
-      color = '#fff5f0';
-
-    }
-    else if (value > 10 && value <= 50) {
-      color = '#fee0d2';
-
-    }
-    else if (value > 50 && value <= 100) {
-      color = '#cb181d';
-
-    }
-    else if (value > 100 && value <= 300) {
-      color = '#fcbba1';
-
-    }
-    else if (value > 300 && value <= 600) {
-      color = '#fc9272';
-
-    }
-    else if (value > 600 && value <= 1200) {
-      color = '#ef3b2c';
-    }
-    else if (value > 1200 && value <= 2400) {
-      color = '#fb6a4a';
-    }
-    else if (value > 2400 && value <= 4800) {
-      color = '#a50f15';
-    }
-    else if (value > 4800) {
-
-      color = '#67000d';
-    }
-
-    return color;
-  }
-
-  addlayers(data: ICsvData) {
-
-    const dates = Object.keys(data.dates);
-    const date = dates[dates.length - 1];
-    const locations = data.locations;
-
-    let hasLog = false;
-    const olJsonLayer = new olVectorLayer({
-      source: new olVectorSource({
-        url: 'assets/data/world-countries.json',
-        format: new olTopoJSON({
-          // don't want to render the full world polygon (stored as 'land' layer),
-          // which repeats all countries
-          layers: ['countries1']
-        }),
-        overlaps: false,
-        attributions: [`vector data from <a href='https://github.com/deldersveld/topojson'>deldersveld</a>`]
-      }),
-      style: (feature, layer) => {
-        /* if (!hasLog) {
-          console.log('feature', feature.get('name'));
-          console.log('layer', layer)
-          hasLog = true;
-        } */
-
-        const name = feature.get('name');
-        if (locations[name]) {
-          const locationIndex = locations[name];
-          const loc = data.dates[date][locationIndex];
-          feature.set('total_cases', loc.total_cases || null);
-
-          /* if (!hasLog) {
-            console.log(loc);
-            hasLog = true;
-          } */
-
-          return new olStyle({
-            fill: new olFill({
-              color: this.getColor(loc.total_cases)
-            }),
-            stroke: new olStroke({
-              color: '#319FD3',
-              width: 1
-            })
-          })
-        } else {
-          return new olStyle({
-            fill: new olFill({
-              color: 'rgba(255, 255, 255, 0.6)'
-            }),
-            stroke: new olStroke({
-              color: '#319FD3',
-              width: 1
-            })
-          })
+    getData().then(data => {
+      this.csvData = data;
+      const layers = createLayers(data);
+      layers.map(l => {
+        if (l.id === 'world_map_json') {
+          this.vectorOlLayer = l.custom_layer;
+          console.log(this.vectorOlLayer)
+          this.vectorOlLayer.setStyle(this.style);
         }
+        this.layerSvc.addLayer(l, 'Layers')
+      });
 
+      this.range.max = data.daterage.count -1;
+      this.range.step = 1;
+      this.range.value = 0;
+      this.timeValue = Object.keys(data.dates)[this.range.value];
 
-      }
-    });
+      this.title = `coronavirus cases on ${this.timeValue}`
+    })
 
-    const layers = [
-      new CustomLayer({
-        name: 'world map',
-        id: 'world_map_json',
-        visible: true,
-        type: 'custom',
-        custom_layer: olJsonLayer,
-        popup: true
-      })
-    ];
-
-    layers.map(l => this.layerSvc.addLayer(l, 'Layers'));
   }
+
+  style = (feature, resolution) => {
+    return styleVector(feature, resolution, this.csvData, this.range.value)
+  }
+
+  public rangeChange(event) {
+    // change date
+    this.range.value = event.target.value;
+    this.timeValue = Object.keys(this.csvData.dates)[this.range.value];
+    this.title = `coronavirus cases on ${this.timeValue}`
+
+    if (this.vectorOlLayer) {
+      this.vectorOlLayer.setStyle(this.style)
+    }
+  }
+
 
   init() {
     this.getHtmlMeta(['title', 'version', 'description', 'short-title']);

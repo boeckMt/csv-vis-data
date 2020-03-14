@@ -2,11 +2,13 @@
 .content-container {
   &>* {
     // width: 100vw;
-    height: 90%;
+    height: 93%;
   }
 
   // openlayers requires its immediate parent to have a specified height: https://github.com/openlayers/openlayers/issues/10327
   .content-area {
+    background: #000;
+
     .map-view {
       height: 100%;
     }
@@ -16,7 +18,7 @@
     position: fixed;
     bottom: 0px;
     width: 100vw;
-    height: 10%;
+    height: 7%;
     padding: 0rem 1rem;
   }
 }

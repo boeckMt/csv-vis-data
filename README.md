@@ -1,16 +1,27 @@
-# CsvVisMap
+# CsvVisMap - coronavirus
 
 
-https://ourworldindata.org/coronavirus-source-data
-
-https://openlayers.org/en/latest/examples/topojson.html?q=csv
-
+## data sources
+- csv: https://ourworldindata.org/coronavirus-source-data (they publish data for today every late evening)
 
 
-https://www.npmjs.com/package/node-fetch
+# Publications on coronavirus
+- https://www.who.int/emergencies/diseases/novel-coronavirus-2019/global-research-on-novel-coronavirus-2019-ncov
+- https://worldhealthorg-my.sharepoint.com/:f:/g/personal/garnicacarrenoj_who_int/EnzxnSJt68pIqLBwPYdqkqcB1KHboCAQJRN3mkTt3ZqDAA?e=OtxhHb
+- https://www.cdc.gov/coronavirus/2019-ncov/publications.html
+- https://www.thelancet.com/coronavirus
+- https://www.ecdc.europa.eu/en/publications-data/rapid-risk-assessment-novel-coronavirus-disease-2019-covid-19-pandemic-increased
+- https://pubs.acs.org/page/vi/chemistry_coronavirus_research
+- https://www.researchgate.net/topic/Coronavirus/publications
 
-https://www.npmjs.com/package/csvtojson#header-row
 
+## Used libs
+- https://openlayers.org/en/latest/examples/topojson.html?q=csv
+- https://www.npmjs.com/package/node-fetch
+- https://www.npmjs.com/package/csvtojson
+- https://github.com/dlr-eoc/ukis-frontend-libraries
+- https://clarity.design/
+- ...
 
 
 
